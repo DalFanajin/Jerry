@@ -1,0 +1,113 @@
+---
+
+  - includes:
+        - brains/say.yml
+        - brains/systemdate.yml
+        - brains/neurotransmitter.yml
+
+  - name: "order-not-found-synapse"
+    signals: []
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "TRUE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh 'je ne connais pas cet ordre'"
+          async: "TRUE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'r' 2 25"
+          async: "TRUE"
+          
+  - name: "order-not-heard-synapse"
+    signals: []
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "TRUE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh 'je nai pas entendu'"
+          async: "TRUE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'r' 2 25"
+          async: "TRUE"
+          
+  - name: "on-triggered-synapse"
+    signals: []
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/listening.sh"
+          async: "FALSE"
+      - sleep:
+          seconds: 1
+
+  - name: "say-smthg"
+    signals:
+      - order: "dis que {{ message }}"
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "TRUE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'g' 2 25"
+          async: "TRUE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh '{{ message }}'"
+          async: "TRUE"
+          
+  - name: "snd-down"
+    signals:
+      - order: "baisse le son"
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "FALSE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/IRCommand.sh 'snd' 'KEY_DOWN'"
+          async: "FALSE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'g' 2 25"
+          async: "FALSE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh 'je baisse le son'"
+          async: "FALSE"
+  
+  - name: "snd-up"
+    signals:
+      - order: "monte le son"
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "FALSE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/IRCommand.sh 'snd' 'KEY_UP'"
+          async: "FALSE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'g' 2 25"
+          async: "FALSE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh 'je monte le son'"
+          async: "FALSE"
+    
+  - name: "snd-mute"
+    signals:
+      - order: "coupe le son de la TV"
+    neurons:
+      - script:
+          path: "/home/pi/Jerry/scripts/doneListening.sh"
+          async: "TRUE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/IRCommand.sh 'tv' 'KEY_MUTE'"
+          async: "TRUE"
+      - shell:
+          cmd: "python3 /home/pi/Jerry/scripts/flash.py 'g' 2 25"
+          async: "TRUE"
+      - shell:
+          cmd: "/home/pi/Jerry/scripts/sayText.sh 'je coupe le son de la TV'"
+          async: "TRUE"
+
+  - name: "on-start-synapse"
+    signals: []
+    neurons:
+      - say:
+          message: "je suis prête"
+
